@@ -13,6 +13,7 @@ import re
 import socket
 import sys
 import time
+import traceback
 import unicodedata
 from optparse import OptionParser
 from urllib import parse as urlparse
@@ -207,8 +208,8 @@ def upload(imap, src, err, time_fields):
             continue
         except socket.error as e:
             p.endNg("Socket error: " + str(e))
-        except Exception, e:
-            p.endNg(e)
+        except Exception as e:
+            traceback.print_exception(e)
         if err is not None:
             err.add(msg)
     p.endAll()
