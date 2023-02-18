@@ -12,9 +12,8 @@ import socket
 import sys
 import time
 import unicodedata
-import urllib
 from optparse import OptionParser
-from urlparse import urlparse
+from urllib import parse as urlparse
 
 __version__ = "1.2"
 
@@ -100,27 +99,21 @@ class MyOptionParser(OptionParser):
         return options
 
     def parse_dest(self, dest):
-        try:
-            dest, ssl = re.subn("^imaps:", "imap:", dest)
-            dest = urlparse(dest)
-            options = optparse.Values()
-            options.ssl = bool(ssl)
-            options.host = dest.hostname
-            options.port = [143, 993][options.ssl]
-            if dest.port:
-                options.port = dest.port
-            if dest.username:
-                options.user = urllib.unquote(dest.username)
-            if dest.password:
-                options.password = urllib.unquote(dest.password)
-            if len(dest.path):
-                options.box = dest.path[1:] # trim the first `/'
-            return options
-        except:
-            self.error("Invalid DEST")
-
-    def error(self, msg):
-        raise optparse.OptParseError(self.get_usage() + "\n" + msg)
+        dest, ssl = re.subn("^imaps:", "imap:", dest)
+        dest = urlparse.urlparse(dest)
+        options = optparse.Values()
+        options.ssl = bool(ssl)
+        options.host = dest.hostname
+        options.port = [143, 993][options.ssl]
+        if dest.port:
+            options.port = dest.port
+        if dest.username:
+            options.user = urlparse.unquote(dest.username)
+        if dest.password:
+            options.password = urlparse.unquote(dest.password)
+        if len(dest.path):
+            options.box = dest.path[1:] # trim the first `/'
+        return options
 
 
 def si_prefix(n, prefixes=("", "k", "M", "G", "T", "P", "E", "Z", "Y"), 
