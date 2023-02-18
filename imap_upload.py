@@ -28,25 +28,25 @@ class MyOptionParser(OptionParser):
                 "  DEST has a priority over the options."
         OptionParser.__init__(self, usage,
                               version="IMAP Upload " + __version__)
-        self.add_option("--gmail", action="callback", nargs=0, 
-                        callback=self.enable_gmail, 
+        self.add_option("--gmail", action="callback", nargs=0,
+                        callback=self.enable_gmail,
                         help="setup for Gmail. Equivalents to "
                              "--host=imap.gmail.com --port=993 "
                              "--ssl --retry=3")
-        self.add_option("--host", 
+        self.add_option("--host",
                         help="destination hostname [default: %default]")
-        self.add_option("--port", type="int", 
+        self.add_option("--port", type="int",
                         help="destination port number [default: 143, 993 for SSL]")
-        self.add_option("--ssl", action="store_true", 
+        self.add_option("--ssl", action="store_true",
                         help="use SSL connection")
-        self.add_option("--box", 
+        self.add_option("--box",
                         help="destination mail box name [default: %default]")
         self.add_option("--user", help="login name [default: empty]")
         self.add_option("--password", help="login password")
-        self.add_option("--retry", type="int", metavar="COUNT", 
+        self.add_option("--retry", type="int", metavar="COUNT",
                         help="retry COUNT times on connection abort. "
                              "0 disables [default: %default]")
-        self.add_option("--error", metavar="ERR_MBOX", 
+        self.add_option("--error", metavar="ERR_MBOX",
                         help="append failured messages to the file ERR_MBOX")
         self.add_option("--time-fields", metavar="LIST", type="string", nargs=1,
                         action="callback", callback=self.set_time_fields,
@@ -63,9 +63,9 @@ class MyOptionParser(OptionParser):
                           ssl=False,
                           user="",
                           password="",
-                          box="INBOX", 
+                          box="INBOX",
                           retry=0,
-                          error=None, 
+                          error=None,
                           time_fields=["from", "received", "date"])
     def enable_gmail(self, option, opt_str, value, parser):
         parser.values.ssl = True
@@ -115,7 +115,7 @@ class MyOptionParser(OptionParser):
         return options
 
 
-def si_prefix(n, prefixes=("", "k", "M", "G", "T", "P", "E", "Z", "Y"), 
+def si_prefix(n, prefixes=("", "k", "M", "G", "T", "P", "E", "Z", "Y"),
               block=1024, threshold=1):
     """Get SI prefix and reduced number."""
     if (n < block * threshold or len(prefixes) == 1):
@@ -223,14 +223,14 @@ def get_delivery_time(self, fields):
       * "from"      From_ line of mbox format.
       * "received"  The first "Received:" field in RFC 2822.
       * "date"      "Date:" field in RFC 2822.
-    Return the current time if the fields is empty or no field 
+    Return the current time if the fields is empty or no field
     had valid value.
     """
     def get_from_time(self):
         """Extract the time from From_ line."""
         time_str = self.get_from().split(" ", 1)[1]
         t = time_str.replace(",", " ").lower()
-        t = re.sub(" (sun|mon|tue|wed|thu|fri|sat) ", " ", 
+        t = re.sub(" (sun|mon|tue|wed|thu|fri|sat) ", " ",
                    " " + t + " ")
         if t.find(":") == -1:
             t += " 00:00:00"
@@ -250,9 +250,9 @@ def get_delivery_time(self, fields):
             t = vars()["get_" + field + "_time"](self)
             t = email.utils.parsedate_tz(t)
             t = email.utils.mktime_tz(t)
-            # Do not allow the time before 1970-01-01 because 
-            # some IMAP server (i.e. Gmail) ignore it, and 
-            # some MUA (Outlook Express?) set From_ date to 
+            # Do not allow the time before 1970-01-01 because
+            # some IMAP server (i.e. Gmail) ignore it, and
+            # some MUA (Outlook Express?) set From_ date to
             # 1965-01-01 for all messages.
             if t < 0:
                 continue
@@ -263,8 +263,8 @@ def get_delivery_time(self, fields):
     return time.time()
 
 # Directly attach get_delivery_time() to the mailbox.mboxMessage
-# as a method. 
-# I want to use the factory parameter of mailbox.mbox() 
+# as a method.
+# I want to use the factory parameter of mailbox.mbox()
 # but it seems not to work in Python 2.5.4.
 mailbox.mboxMessage.get_delivery_time = get_delivery_time
 
@@ -312,7 +312,7 @@ class IMAPUploader:
 def main(args=None):
     try:
         # Setup locale
-        # Set LC_TIME to "C" so that imaplib.Time2Internaldate() 
+        # Set LC_TIME to "C" so that imaplib.Time2Internaldate()
         # uses English month name.
         locale.setlocale(locale.LC_ALL, "")
         locale.setlocale(locale.LC_TIME, "C")
